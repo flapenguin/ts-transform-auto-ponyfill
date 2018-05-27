@@ -4,17 +4,19 @@ import autoPonyfill from '../src/autoPonyfill';
 
 const config: ts.CompilerOptions = {
     declaration: false,
-    outFile: 'out.js',
-    module: ts.ModuleKind.AMD
+    target: ts.ScriptTarget.ES2015,
+    module: ts.ModuleKind.ES2015
 };
 
-const sources = [`${__dirname}/src.ts`, `${__dirname}/arrayPonyfills.ts`];
+const sources = [`${__dirname}/src/src.ts`, `${__dirname}/src/arrayPonyfills.ts`];
 
 const host = ts.createCompilerHost(config);
 const program = ts.createProgram(sources, config, host);
 
 function write(fileName: string, data: string) {
+    console.log('===========================');
     console.log('==============', fileName);
+    console.log('===========================');
     console.log(data);
 }
 
@@ -23,8 +25,8 @@ const emit = program.emit(undefined, write, undefined, undefined, {
         autoPonyfill({
             typeChecker: program.getTypeChecker(),
             ponyfillMethods: {
-                [`Array@${require.resolve('typescript/lib/lib.d.ts')}`]: {
-                    file: require.resolve('./arrayPonyfills.ts'),
+                [`Array@${require.resolve('typescript/lib/lib.es6.d.ts').replace(/\\/g, '/')}`]: {
+                    file: require.resolve('./src/arrayPonyfills.ts').replace(/\\/g, '/'),
                     methods: {
                         map: true,
                         filter: 'myFilter'
@@ -50,4 +52,3 @@ for (const diagnostic of diagnostics) {
     const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n')
     console.log(`${fileName} (${line + 1},${character + 1}): ${message}`)
 }
-

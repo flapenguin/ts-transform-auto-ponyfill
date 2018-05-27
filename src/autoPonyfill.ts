@@ -48,12 +48,14 @@ function createVisitor(ctx: ts.TransformationContext, file: ts.SourceFile, optio
                 /* decorators */ undefined,
                 /* modifiers */ undefined,
                 ts.createImportClause(
-                    ts.createIdentifier(
+                    ts.createUniqueName(
                         `${path.parse(ponyfill.file).name.replace(/\W/g, '_')}`
                     ),
                     undefined
                 ),
-                ts.createLiteral(path.relative(file.fileName, ponyfill.file))
+                ts.createLiteral(
+                    './' + path.relative(path.dirname(file.fileName), ponyfill.file).replace(/\.\w+$/, '')
+                )
             );
 
         const importName = newDeclarations[file.fileName].importClause!.name!;

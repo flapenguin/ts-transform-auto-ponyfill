@@ -17,3 +17,10 @@ const b = new Array();
 b.map(cb);
 
 export default 0;
+
+// Ensure TypeScript generates unique name.
+const arrayPonyfills_1 = 0;
+
+function f(arrayPonyfills_2) {
+    [].map(cb);
+}
