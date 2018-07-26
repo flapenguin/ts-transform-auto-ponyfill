@@ -1,14 +1,19 @@
 import * as ts from 'typescript';
+import * as fs from 'fs';
 
 import autoPonyfill from '../src/autoPonyfill';
 
 const config: ts.CompilerOptions = {
-    declaration: false,
-    target: ts.ScriptTarget.ES2015,
-    module: ts.ModuleKind.ES2015
+    outFile: 'out.js',
+    module: ts.ModuleKind.AMD,
+    target: ts.ScriptTarget.ES2015
 };
 
-const sources = [`${__dirname}/src/src.ts`, `${__dirname}/src/arrayPonyfills.ts`];
+const sources = [
+    `${__dirname}/src/entry.ts`,
+    // TODO: program do not automatically add new imports
+    `${__dirname}/src/arrayPonyfills.ts`
+];
 
 const host = ts.createCompilerHost(config);
 const program = ts.createProgram(sources, config, host);

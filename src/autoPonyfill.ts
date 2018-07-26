@@ -53,9 +53,7 @@ function createVisitor(ctx: ts.TransformationContext, file: ts.SourceFile, optio
                     ),
                     undefined
                 ),
-                ts.createLiteral(
-                    './' + path.relative(path.dirname(file.fileName), ponyfill.file).replace(/\.\w+$/, '')
-                )
+                ts.createLiteral('./' + path.relative(path.dirname(file.fileName), ponyfill.file))
             );
 
         const importName = newDeclarations[file.fileName].importClause!.name!;
