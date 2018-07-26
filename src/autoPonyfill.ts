@@ -43,24 +43,28 @@ function createVisitor(ctx: ts.TransformationContext, file: ts.SourceFile, optio
             ? methodName
             : ponyfill.methods[methodName] as string;
 
+
+        const importName = ts.createIdentifier(
+            `${path.parse(ponyfill.file).name.replace(/\W/g, '_')}`
+        );
         newDeclarations[file.fileName] = newDeclarations[file.fileName] ||
             ts.createImportDeclaration(
                 /* decorators */ undefined,
                 /* modifiers */ undefined,
-                ts.createImportClause(
-                    ts.createUniqueName(
-                        `${path.parse(ponyfill.file).name.replace(/\W/g, '_')}`
-                    ),
-                    undefined
+                /* import clause */ ts.createImportClause(
+                    undefined,
+                    ts.createNamespaceImport(importName)
                 ),
                 ts.createLiteral('./' + path.relative(path.dirname(file.fileName), ponyfill.file))
             );
 
-        const importName = newDeclarations[file.fileName].importClause!.name!;
         return ts.updateCall(node,
             ts.createPropertyAccess(importName, ts.createIdentifier(newMethodName)),
             undefined,
-            [method.expression, ...node.arguments]
+            [
+                ts.visitNode(method.expression, visitor),
+                ...ts.visitNodes(node.arguments, visitor)
+            ]
         );
     };
 
@@ -73,7 +77,6 @@ export function autoPonyfillTransformer (options: Options) {
             const { visitor, declarations } = createVisitor(ctx, file, options)
             let f = ts.visitNode(file, visitor);
 
-            // TODO: synchronize names in import and calls
             f = ts.updateSourceFileNode(f, [
                 ...Object.keys(declarations).map(x => declarations[x]),
                 ...f.statements
