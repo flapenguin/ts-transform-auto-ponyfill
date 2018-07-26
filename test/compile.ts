@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
 import * as fs from 'fs';
 
-import autoPonyfill from '../src/autoPonyfill';
+import { autoPonyfillTransformer } from '../src/autoPonyfill';
 
 const config: ts.CompilerOptions = {
     outFile: 'out.js',
@@ -27,7 +27,7 @@ function write(fileName: string, data: string) {
 
 const emit = program.emit(undefined, write, undefined, undefined, {
     before: [
-        autoPonyfill({
+        autoPonyfillTransformer({
             typeChecker: program.getTypeChecker(),
             ponyfillMethods: {
                 [`Array@${require.resolve('typescript/lib/lib.es6.d.ts').replace(/\\/g, '/')}`]: {

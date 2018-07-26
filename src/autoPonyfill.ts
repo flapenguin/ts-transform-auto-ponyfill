@@ -67,7 +67,7 @@ function createVisitor(ctx: ts.TransformationContext, file: ts.SourceFile, optio
     return { visitor, declarations: newDeclarations };
 }
 
-export default function (options: Options) {
+export function autoPonyfillTransformer (options: Options) {
     return (ctx: ts.TransformationContext): ts.Transformer<ts.SourceFile> => {
         return (file: ts.SourceFile) => {
             const { visitor, declarations } = createVisitor(ctx, file, options)
